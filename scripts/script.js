@@ -2,81 +2,89 @@ const carousel = document.getElementById("carousel");
 const leftHandle = document.getElementById("leftHandle");
 const rightHandle = document.getElementById("rightHandle");
 
-class Carousel {
-  constructor(carousel, images, leftHandle, rightHandle, selected = 0) {
-    this.carousel = carousel;
-    this.images = images;
-    this.leftHandle = leftHandle;
-    this.rightHandle = rightHandle;
-    this.selected = selected;
-    this.placeImages();
-    this.dotHolder = this.createProgress();
-    this.addListeners();
-    this.setSelection();
-  }
-
-  addListeners() {
-    this.leftHandle.addEventListener("click", this.swipeLeft);
-    this.rightHandle.addEventListener("click", this.swipeRight);
-    this.dotHolder.addEventListener("click", this.dotSelect);
-  }
-
-  swipeLeft = () => {
-    this.selected -= 1;
-    if (this.selected < 0) this.selected += this.images.length;
-    this.setSelection();
-  };
-
-  swipeRight = () => {
-    this.selected += 1;
-    this.selected %= this.images.length;
-    this.setSelection();
-  };
-
-  dotSelect = (event) => {
-    if (!event.target.classList.contains("dot")) return;
-    this.selected = +event.target.dataset.index;
-    console.log(this.selected);
-    this.setSelection();
-  };
-
-  setSelection() {
-    const imageHolder = this.carousel.querySelector(".img-holder");
-    const dot = this.dotHolder.querySelector(`[data-index='${this.selected}']`);
-    imageHolder.style.transform = `translateX(${560 * -this.selected}px)`;
-    this.dotHolder.querySelector(".selected")?.classList.remove("selected");
-    dot.classList.add("selected");
-  }
-
-  placeImages() {
+function Carousel(carousel, images, leftHandle, rightHandle, selected = 0) {
+  // Place images in the carousel
+  const placeImages = () => {
     const imageFrame = document.createElement("div");
     imageFrame.classList.add("img-frame");
     const imageHolder = document.createElement("div");
     imageHolder.classList.add("img-holder");
-    this.images.forEach((image) => {
+    images.forEach((image) => {
       const img = document.createElement("img");
       img.src = `./${image}`;
       imageHolder.appendChild(img);
     });
     imageFrame.appendChild(imageHolder);
-    this.carousel.appendChild(imageFrame);
-  }
+    carousel.appendChild(imageFrame);
+  };
 
-  createProgress() {
+  // Create progress dots
+  const createProgress = () => {
     const dotHolder = document.createElement("div");
     dotHolder.classList.add("dot-holder");
-    this.images.forEach((_, idx) => {
+    images.forEach((_, idx) => {
       const span = document.createElement("span");
       span.dataset.index = idx;
       span.classList.add("dot");
       dotHolder.appendChild(span);
     });
-    this.carousel.appendChild(dotHolder);
+    carousel.appendChild(dotHolder);
     return dotHolder;
-  }
+  };
+
+  // Add event listeners to handle left/right swipes and dot selection
+  const addListeners = () => {
+    leftHandle.addEventListener("click", swipeLeft);
+    rightHandle.addEventListener("click", swipeRight);
+    dotHolder.addEventListener("click", dotSelect);
+  };
+
+  // Handle left swipe
+  const swipeLeft = () => {
+    selected -= 1;
+    if (selected < 0) selected += images.length;
+    setSelection();
+  };
+
+  // Handle right swipe
+  const swipeRight = () => {
+    selected += 1;
+    selected %= images.length;
+    setSelection();
+  };
+
+  // Handle dot selection
+  const dotSelect = (event) => {
+    if (!event.target.classList.contains("dot")) return;
+    selected = +event.target.dataset.index;
+    console.log(selected);
+    setSelection();
+  };
+
+  // Set the selected image and update carousel and dots
+  const setSelection = () => {
+    const imageHolder = carousel.querySelector(".img-holder");
+    const dot = dotHolder.querySelector(`[data-index='${selected}']`);
+    imageHolder.style.transform = `translateX(${560 * -selected}px)`;
+    dotHolder.querySelector(".selected")?.classList.remove("selected");
+    dot.classList.add("selected");
+  };
+
+  // Create progress dots
+  const dotHolder = createProgress();
+
+  // Place images in the carousel
+  placeImages();
+
+  // Add event listeners
+  addListeners();
+
+  // Set initial selected image
+  setSelection();
 }
 
-new Carousel(
+// Create a new instance of the Carousel
+Carousel(
   carousel,
   [
     "./assets/1.jpeg",
